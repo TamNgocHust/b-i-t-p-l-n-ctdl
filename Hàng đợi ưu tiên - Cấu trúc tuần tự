@@ -1,0 +1,146 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define MAX 100 // Định nghĩa kích thước tối đa của hàng đợi
+
+// Cấu trúc phần tử trong hàng đợi
+struct Element {  
+    int value;                  
+    int priority;                    
+}; 
+
+// Cấu trúc hàng đợi ưu tiên
+struct PriorityQueue {  
+    Element infor[MAX]; // Mảng lưu các phần tử trong hàng đợi  
+    int size;           // Kích thước hiện tại của hàng đợi 
+}; 
+
+// Hàm khởi tạo hàng đợi
+PriorityQueue createPriorityQueue() {      
+    PriorityQueue pq;   
+    pq.size = 0; // Gán kích thước ban đầu là 0      
+    return pq;   
+} 
+
+// Kiểm tra hàng đợi rỗng
+bool isempty(const PriorityQueue* pq) {      
+    return (pq->size == 0);    
+}   
+
+// Kiểm tra hàng đợi đầy
+bool isfull(const PriorityQueue* pq) {      
+    return (pq->size == MAX);    
+}   
+
+// Thêm phần tử vào hàng đợi ưu tiên
+void addPriorityQueue(PriorityQueue* pq, Element e) {      
+    if (isfull(pq)) { // Kiểm tra nếu hàng đợi đầy           
+        cout << "\nHàng đợi đầy" << endl;           
+        return;   
+    }       
+    int i = pq->size - 1; // Tìm vị trí chèn phần tử dựa trên độ ưu tiên  
+
+    // Sắp xếp theo thứ tự giảm dần của độ ưu tiên
+    while (i >= 0 && e.priority >= pq->infor[i].priority) {  
+        pq->infor[i + 1] = pq->infor[i]; // Dịch phần tử về sau  
+        i--; 
+    }   
+    pq->infor[i + 1] = e; // Chèn phần tử vào vị trí đã tìm      
+    pq->size++; // Tăng số lượng phần tử   
+} 
+
+// Lấy phần tử có độ ưu tiên cao nhất
+Element popPriorityQueue(PriorityQueue* pq) {      
+    if (isempty(pq)) { // Kiểm tra nếu hàng đợi rỗng          
+        cout << "Hàng đợi rỗng\n";   
+        return {-1, -1}; // Trả về phần tử mặc định   
+    }   
+    Element e = pq->infor[0]; // Lấy phần tử đầu tiên (cao nhất)   
+    // Dịch chuyển các phần tử còn lại lên trước  
+    for (int i = 0; i < pq->size - 1; i++) {         
+        pq->infor[i] = pq->infor[i + 1];  
+    }   
+    pq->size--; // Giảm số lượng phần tử      
+    return e; // Trả về phần tử vừa lấy ra   
+}   
+
+// Hiển thị hàng đợi
+void display(const PriorityQueue* pq) {      
+    if (isempty(pq)) {    
+        cout << "\nHàng đợi rỗng" << endl;          
+        return;   
+    }   
+    cout << "\nCac phan tu trong hang doi: "; 
+    for (int i = 0; i < pq->size; i++) {   
+        cout << "(" << pq->infor[i].value << ", " << pq->infor[i].priority << ") ";  
+    }   
+    cout << endl;   
+}   
+
+// Lấy phần tử có độ ưu tiên cao nhất (không xóa)
+Element top(const PriorityQueue* pq) {  
+    if (isempty(pq)) { // Kiểm tra nếu hàng đợi rỗng  
+        cout << "\nHàng đợi rỗng." << endl;  
+        return {-1, -1}; // Trả về phần tử mặc định  
+    }  
+    return pq->infor[0]; // Trả về phần tử đầu tiên (cao nhất)  
+} 
+
+// Cập nhật độ ưu tiên của một phần tử
+void updatePriority(PriorityQueue* pq, int value, int newPriority) {      
+    if (isempty(pq)) {   
+        cout << "\nHàng đợi rỗng." << endl;          
+        return;   
+    }   
+    // Tìm phần tử có giá trị `value`      
+    int index = -1; 
+    for (int i = 0; i < pq->size; i++) {          
+        if (pq->infor[i].value == value) {              
+            index = i;              
+            break;   
+        } 
+    }   
+    if (index == -1) {   
+        cout << "\nKhông tìm thấy phần tử có giá trị " << value << "." << endl;          
+        return;   
+    }   
+    // Xóa phần tử khỏi hàng đợi   
+    Element temp = pq->infor[index];      
+    for (int i = index; i < pq->size - 1; i++) {          
+        pq->infor[i] = pq->infor[i + 1];   
+    }   
+    pq->size--;   
+    // Cập nhật độ ưu tiên và chèn lại      
+    temp.priority = newPriority;   
+    addPriorityQueue(pq, temp);   
+}   
+
+// Hàm chính để kiểm tra các chức năng
+int main() {
+    PriorityQueue pq = createPriorityQueue();
+
+    // Thêm phần tử
+    addPriorityQueue(&pq, {10, 2});
+    addPriorityQueue(&pq, {20, 1});
+    addPriorityQueue(&pq, {30, 3});
+
+    // Hiển thị hàng đợi
+    cout << "Hang doi sau khi them:" << endl;
+    display(&pq);
+
+    // Lấy phần tử có độ ưu tiên cao nhất
+    cout << "\nPhan tu dau tien: (" << top(&pq).value << ", " << top(&pq).priority << ")" << endl;
+
+    // Cập nhật độ ưu tiên
+    updatePriority(&pq, 20, 4);
+    cout << "\nHang doi sau khi cap nhat do uu tien cua 20 len 4:" << endl;
+    display(&pq);
+
+    // Lấy và xóa phần tử có độ ưu tiên cao nhất
+    Element e = popPriorityQueue(&pq);
+    cout << "\nPhan tu da lay ra: (" << e.value << ", " << e.priority << ")" << endl;
+    cout << "Hang doi sau khi lay phan tu:" << endl;
+    display(&pq);
+
+    return 0;
+}
