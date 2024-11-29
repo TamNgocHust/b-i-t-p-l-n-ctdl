@@ -1,0 +1,114 @@
+#include <bits/stdc++.h>
+using namespace std;
+struct Node { 
+    int data; 
+    int priority; 
+    Node* next; 
+}; 
+ 
+class PriorityQueue { 
+private: 
+    Node* head; // Con trỏ đầu danh sách liên kết 
+public:
+    //Hàm khởi tạo
+    PriorityQueue() {  
+        head = nullptr; 
+    } 
+//Hàm kiểm tra rỗng
+bool isEmpty() { 
+    return head == nullptr; 
+}
+//Thao tác thêm 1 phần tử dựa trên độ ưu tiên  
+ void push(int value, int priority) { 
+    Node* newNode = new Node{value, priority, nullptr}; 
+     
+    if (head == nullptr || head->priority < priority) { 
+        newNode->next = head; 
+        head = newNode; 
+    } else { 
+        Node* temp = head; 
+        while (temp->next != nullptr && temp->next->priority >= priority) { 
+            temp = temp->next; 
+        } 
+        newNode->next = temp->next; 
+        temp->next = newNode; 
+    } 
+} 
+//Hàm lấy ra (xóa) một phần tử có độ ưu tiên cao nhất 
+int pop() { 
+    if (head == nullptr) { 
+        throw runtime_error("Queue is empty!"); 
+    } 
+    int topValue = head->data; 
+    Node* temp = head; 
+    head = head->next; 
+    delete temp; 
+    return topValue; 
+} 
+//Hàm hiển thị  
+void display() { 
+    Node* temp = head; 
+    while (temp != nullptr) { 
+        cout << "Value: " << temp->data << ", Priority: " << temp->priority << endl; 
+        temp = temp->next; 
+    } 
+} 
+//Hàm truy vấn phần tử có độ ưu tiên cao nhất  
+int top() { 
+    if (head == nullptr) { 
+        throw runtime_error("Queue is empty!"); 
+    } 
+    return head->data; 
+} 
+//Hàm cập nhật độ ưu tiên  
+ void updatePriority(int value, int newPriority) { 
+    Node* temp = head; 
+    Node* prev = nullptr; 
+ 
+    // Tìm phần tử trong danh sách 
+    while (temp != nullptr && temp->data != value) { 
+        prev = temp; 
+        temp = temp->next; 
+    } 
+ 
+    if (temp == nullptr) return; // Không tìm thấy phần tử 
+ 
+    // Xóa phần tử khỏi vị trí hiện tại 
+    if (prev == nullptr) { 
+        head = temp->next; 
+    } else { 
+        prev->next = temp->next; 
+    } 
+ 
+    // Thêm lại phần tử với độ ưu tiên mới 
+    push(value, newPriority); 
+    delete temp; 
+}
+};
+int main() {
+    PriorityQueue pq;
+
+    // Thêm phần tử
+    pq.push(10, 2);
+    pq.push(20, 1);
+    pq.push(30, 3);
+
+    // Hiển thị hàng đợi ưu tiên
+    cout << "Priority Queue after pushes:" << endl;
+    pq.display();
+
+    // Lấy phần tử có độ ưu tiên cao nhất
+    cout << "Top element: " << pq.top() << endl;
+
+    // Cập nhật độ ưu tiên
+    pq.updatePriority(20, 4);
+    cout << "Priority Queue after updating priority of 20 to 4:" << endl;
+    pq.display();
+
+    // Xóa phần tử
+    cout << "Popped element: " << pq.pop() << endl;
+    cout << "Priority Queue after pop:" << endl;
+    pq.display();
+
+    return 0;
+}
